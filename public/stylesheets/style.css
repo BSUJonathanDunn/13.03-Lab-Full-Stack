@@ -1,8 +1,237 @@
+/* --------------------------- Base body --------------------------- */
 body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  background: #4b5b45;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #2b2b2b;
+  padding: 2rem;
+  line-height: 1.5;
+  overflow-x: hidden; /* for snow animation */
 }
 
-a {
-  color: #00B7FF;
+/* --------------------------- Snow animation --------------------------- */
+@keyframes fall {
+  0% { transform: translateY(-10%) rotate(0deg); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+}
+
+.snowflake {
+  position: fixed;
+  top: -2rem;
+  font-size: 1rem;
+  color: #fff8dc;
+  pointer-events: none;
+  animation: fall linear infinite;
+  opacity: 0.8;
+}
+
+/* --------------------------- Titles --------------------------- */
+h1, h2 {
+  text-align: center;
+  margin-bottom: 1rem;
+  color: #f0f0e0;
+  text-shadow:
+    0 0 4px #ffd700,
+    0 0 8px #ffd700,
+    0 0 12px #b0e0e6;
+  animation: glow 3s infinite alternate;
+}
+
+/* Muted glow animation */
+@keyframes glow {
+  from {
+    text-shadow:
+      0 0 3px #e6c200,
+      0 0 6px #e6c200,
+      0 0 9px #a0c4cc;
+  }
+  to {
+    text-shadow:
+      0 0 6px #ffd700,
+      0 0 12px #ffd700,
+      0 0 18px #b0e0e6;
+  }
+}
+
+/* --------------------------- Task List --------------------------- */
+ol {
+  list-style: none;
+  padding-left: 0;
+  max-width: 600px;
+  margin: 0 auto 2rem auto;
+}
+
+li {
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  padding: 0.5rem;
+  transition: background-color 0.2s ease;
+  text-align: left;
+}
+
+/* Alternate li colors - muted blues */
+li:nth-child(odd) {
+  background-color: #cce0f5;
+}
+
+li:nth-child(even) {
+  background-color: #b0cbe8;
+}
+
+li:hover {
+  background-color: #99b8db;
+}
+
+/* --------------------------- Spans inside li --------------------------- */
+li .task, li .complete {
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  margin-right: 0.5rem;
+  display: inline-block;
+  vertical-align: middle;
+  transition: background-color 0.2s ease, transform 0.1s ease, color 0.2s ease;
+}
+
+span.task {
+  flex: 1;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+  color: #2b2b2b;
+}
+
+span.task[contenteditable="true"] {
+  background-color: #fff8dc;
+  color: #2b2b2b;
+  box-shadow: 0 0 5px 2px rgba(255, 215, 0, 0.2); /* softer gold glow */
+}
+
+span.task.completed {
+  text-decoration: line-through;
+  color: #555;
+}
+
+/* --------------------------- Completion span --------------------------- */
+span.complete {
+  font-weight: bold;
+  color: #fff;
+  cursor: pointer;
+  min-width: 90px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.1s ease, filter 0.2s ease;
+}
+
+span.complete[data-completed="1"] {
+  background-color: #006400;
+}
+
+span.complete[data-completed="0"] {
+  background-color: #b03060;
+}
+
+span.complete:hover {
+  filter: brightness(1.2);
+  transform: scale(1.05);
+}
+
+/* --------------------------- Delete Button --------------------------- */
+form button {
+  background-color: #8b0000;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  height: 28px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: auto;
+  transition: background-color 0.2s ease;
+}
+
+form button:hover {
+  background-color: #5a0000;
+}
+
+li form {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+/* --------------------------- Add Task Form --------------------------- */
+form.add-task, form[method="POST"][action="/create"] {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 600px;
+  margin: 1rem auto 2rem auto;
+  flex-wrap: wrap;
+  background: linear-gradient(to bottom, rgba(217, 234, 252, 0.8), rgba(217, 234, 252, 0.6));
+  backdrop-filter: blur(5px);
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+form.add-task input[type="text"], form[method="POST"][action="/create"] input[type="text"] {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+}
+
+form.add-task input[type="text"]:focus, form[method="POST"][action="/create"] input[type="text"]:focus {
+  border-color: #0066cc;
+  background-color: #ffffff;
+  color: #000;
+  outline: none;
+}
+
+form.add-task label, form[method="POST"][action="/create"] label {
+  font-weight: bold;
+  margin-right: 0.25rem;
+  align-self: center;
+}
+
+form.add-task button[type="submit"], form[method="POST"][action="/create"] button[type="submit"] {
+  background: linear-gradient(to bottom, #228B22, #006400);
+  color: #fff;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+form.add-task button[type="submit"]:hover, form[method="POST"][action="/create"] button[type="submit"]:hover {
+  background: linear-gradient(to bottom, #32CD32, #004d00);
+  transform: scale(1.05);
+}
+
+/* --------------------------- Responsive tweaks --------------------------- */
+@media (max-width: 640px) {
+  form.add-task, form[method="POST"][action="/create"] {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  li {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  form button {
+    margin-left: 0;
+    margin-top: 0.25rem;
+  }
 }

@@ -18,21 +18,54 @@ router.get('/', function(req, res, next){
 });
 
 router.post('/create', function (req, res, next) {
-    const { task } = req.body;
-    try {
-      req.db.query('INSERT INTO todos (task) VALUES (?);', [task], (err, results) => {
-        if (err) {
-          console.error('Error adding todo:', err);
-          return res.status(500).send('Error adding todo');
-        }
-        console.log('Todo added successfully:', results);
-        // Redirect to the home page after adding
-        res.redirect('/');
-      });
-    } catch (error) {
-      console.error('Error adding todo:', error);
-      res.status(500).send('Error adding todo');
+  const { task } = req.body;
+
+  if (!task || !task.trim()) {
+    // Task is blank
+    return res.status(400).send('Task cannot be blank');
+  }
+
+  try {
+    req.db.query('INSERT INTO todos (task) VALUES (?);', [task.trim()], (err, results) => {
+      if (err) {
+        console.error('Error adding todo:', err);
+        return res.status(500).send('Error adding todo');
+      }
+      console.log('Todo added successfully:', results);
+      res.redirect('/');
+    });
+  } catch (error) {
+    console.error('Error adding todo:', error);
+    res.status(500).send('Error adding todo');
+  }
+});
+
+router.post('/edit', function (req, res, next) {
+  const { id, edit } = req.body;
+
+  req.db.query('UPDATE todos SET task = ? WHERE id = ?', [edit, id], function (err, results) {
+    if (err) {
+      console.error('Error editing todo:', err);
+      return res.status(500).send('Error editing todo');
     }
+
+    console.log('Todo edited successfully:', results);
+    res.redirect('/');
+  });
+});
+
+router.post('/update_complete', function (req, res, next) {
+  const { id, edit } = req.body;
+
+  req.db.query('UPDATE todos SET completed = ? WHERE id = ?', [edit, id], function (err, results) {
+    if (err) {
+      console.error('Error editing todo:', err);
+      return res.status(500).send('Error editing todo');
+    }
+
+    console.log('Todo edited successfully:', results);
+    res.redirect('/');
+  });
 });
 
 router.post('/delete', function (req, res, next) {

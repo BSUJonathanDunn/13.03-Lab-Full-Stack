@@ -6,11 +6,12 @@ block content
   ol
   each val in todos
     li
-      span= val.task + ' - '
+      span.task(data-id=val.id)= val.task 
+      span= ' - '
       if val.completed > 0
-        span Completed
+        span.complete(data-id=val.id data-completed=val.completed) Completed
       else
-        pan Not Completed
+        span.complete(data-id=val.id data-completed=val.completed) Not Completed
       form(method='POST' action='/delete')
         input(type='hidden', name='id', value=val.id)
         button(type='submit') Delete
