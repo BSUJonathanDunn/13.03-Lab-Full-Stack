@@ -1,28 +1,38 @@
+/*Javascript file for the front end code of the page.
+ *Deals with the animations, editable span elements
+ *and gives a second layer of checks for blank textboxes.*/
 document.addEventListener('DOMContentLoaded', () => {
-    const snowflakeCount = 30; // number of snowflakes
+  
+  //Snowflakes on the page
+  const snowflakeCount = 30;
   for (let i = 0; i < snowflakeCount; i++) {
     const flake = document.createElement('span');
     flake.className = 'snowflake';
-    flake.style.left = Math.random() * 100 + 'vw'; // random horizontal start
-    flake.style.fontSize = (Math.random() * 10 + 10) + 'px'; // random size
-    flake.style.animationDuration = (Math.random() * 5 + 5) + 's'; // random fall duration
-    flake.style.animationDelay = Math.random() * 5 + 's'; // random delay
-    flake.textContent = '❄'; // snowflake character
+    flake.style.left = Math.random() * 100 + 'vw';
+    flake.style.fontSize = (Math.random() * 10 + 10) + 'px';
+    flake.style.animationDuration = (Math.random() * 5 + 5) + 's';
+    flake.style.animationDelay = Math.random() * 5 + 's';
+    flake.textContent = '❄';
     document.body.appendChild(flake);
-  }  
+  }
+
   const taskForm = document.querySelector('form[action="/create"]');
   const taskInput = document.querySelector('#task');
 
-  taskForm.addEventListener('submit', (e) => {
+  //Front-End Check for a blank task-list entry
+  taskForm.addEventListener('submit', (event) => {
     if (!taskInput.value.trim()) {
-      e.preventDefault();
+      event.preventDefault();
       alert('Task cannot be blank!');
+      taskInput.textContent = "";
       taskInput.focus();
     }
   });
 
+  //Code for making the span elements editable
   const tasks = document.querySelectorAll('.task');
 
+  //If user gives a blank box or changes their mind, save original text.
   tasks.forEach(span => {
     const originalText = span.textContent.trim();
 
@@ -48,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       fetch('/edit', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         body: new URLSearchParams({ id, edit: newText })
       })
         .then(res => {
@@ -70,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Handle completion toggling
+  //Completion span toggle
   const completedSpans = document.querySelectorAll('.complete');
   completedSpans.forEach(span => {
     span.addEventListener('click', () => {
@@ -90,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
           span.textContent = newValue ? 'Completed' : 'Not Completed';
           span.dataset.completed = newValue;
 
-          // Update the corresponding task span with completed class
+          // Update task span with completed class
           const taskSpan = document.querySelector(`.task[data-id="${id}"]`);
           if (newValue) {
             taskSpan.classList.add('completed');

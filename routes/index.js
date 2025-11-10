@@ -21,7 +21,6 @@ router.post('/create', function (req, res, next) {
   const { task } = req.body;
 
   if (!task || !task.trim()) {
-    // Task is blank
     return res.status(400).send('Task cannot be blank');
   }
 
@@ -77,7 +76,6 @@ router.post('/delete', function (req, res, next) {
           return res.status(500).send('Error deleting todo');
         }
         console.log('Todo deleted successfully:', results);
-        // Redirect to the home page after deletion
         res.redirect('/');
     });
     }catch (error) {
