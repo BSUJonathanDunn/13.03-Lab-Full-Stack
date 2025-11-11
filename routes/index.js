@@ -39,6 +39,7 @@ router.post('/create', function (req, res, next) {
   }
 });
 
+//Updating task column once task edited
 router.post('/edit', function (req, res, next) {
   const { id, edit } = req.body;
 
@@ -53,10 +54,11 @@ router.post('/edit', function (req, res, next) {
   });
 });
 
+//Updating the completed column value when clicked
 router.post('/update_complete', function (req, res, next) {
-  const { id, edit } = req.body;
+  const { id, completed } = req.body;
 
-  req.db.query('UPDATE todos SET completed = ? WHERE id = ?', [edit, id], function (err, results) {
+  req.db.query('UPDATE todos SET completed = ? WHERE id = ?', [completed, id], function (err, results) {
     if (err) {
       console.error('Error editing todo:', err);
       return res.status(500).send('Error editing todo');

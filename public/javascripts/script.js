@@ -32,55 +32,57 @@ document.addEventListener('DOMContentLoaded', () => {
   //Code for making the span elements editable
   const tasks = document.querySelectorAll('.task');
 
-  //If user gives a blank box or changes their mind, save original text.
-  tasks.forEach(span => {
-    const originalText = span.textContent.trim();
+  //If user gives a blank box or changes their mind, save original text to the span's dataset.
+ tasks.forEach(span => {
+  if (!span.dataset.original) {
+    span.dataset.original = span.textContent.trim();
+  }
 
-    // Enable editing on click
-    span.addEventListener('click', () => {
-      span.contentEditable = true;
-      span.focus();
-    });
-
-    // Save changes when editing ends
-    const saveChange = () => {
-      span.contentEditable = false;
-      const id = span.dataset.id;
-      const newText = span.textContent.trim();
-
-      if (!newText) {
-        alert('Task cannot be blank!');
-        span.textContent = originalText;
-        return;
-      }
-
-      if (newText === originalText) return;
-
-      fetch('/edit', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: new URLSearchParams({ id, edit: newText })
-      })
-        .then(res => {
-          if (!res.ok) throw new Error('Update failed');
-          console.log(`Task ${id} updated`);
-        })
-        .catch(err => {
-          console.error(err);
-          span.textContent = originalText;
-        });
-    };
-
-    span.addEventListener('blur', saveChange);
-    span.addEventListener('keydown', e => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        span.blur();
-      }
-    });
+  span.addEventListener('click', () => {
+    span.contentEditable = true;
+    span.focus();
   });
 
-  //Completion span toggle
+  const saveChange = () => {
+    span.contentEditable = false;
+    const id = span.dataset.id;
+    const newText = span.textContent.trim();
+
+    if (!newText) {
+      alert('Task cannot be blank!');
+      span.textContent = span.dataset.original;
+      span.focus();
+      return;
+    }
+
+    if (newText === span.dataset.original) return;
+
+    fetch('/edit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ id, edit: newText })
+    })
+      .then(res => {
+        if (!res.ok) throw new Error('Update failed');
+        span.dataset.original = newText;
+      })
+      .catch(err => {
+        console.error(err);
+        span.textContent = span.dataset.original;
+      });
+  };
+
+  span.addEventListener('blur', saveChange);
+
+  span.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      span.blur();
+    }
+  });
+});
+
+  //Completion toggle
   const completedSpans = document.querySelectorAll('.complete');
   completedSpans.forEach(span => {
     span.addEventListener('click', () => {
@@ -96,11 +98,10 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(res => {
           if (!res.ok) throw new Error('Update failed');
 
-          // Update the complete span text and data attribute
           span.textContent = newValue ? 'Completed' : 'Not Completed';
           span.dataset.completed = newValue;
 
-          // Update task span with completed class
+
           const taskSpan = document.querySelector(`.task[data-id="${id}"]`);
           if (newValue) {
             taskSpan.classList.add('completed');

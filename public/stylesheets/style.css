@@ -1,28 +1,10 @@
-/* --------------------------- Base body --------------------------- */
 body {
   background: #4b5b45;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #2b2b2b;
   padding: 2rem;
   line-height: 1.5;
-  overflow-x: hidden; /* for snow animation */
-}
-
-/* --------------------------- Snow animation --------------------------- */
-@keyframes fall {
-  0% { transform: translateY(-10%) rotate(0deg); opacity: 0; }
-  50% { opacity: 1; }
-  100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
-}
-
-.snowflake {
-  position: fixed;
-  top: -2rem;
-  font-size: 1rem;
-  color: #fff8dc;
-  pointer-events: none;
-  animation: fall linear infinite;
-  opacity: 0.8;
+  overflow-x: hidden;
 }
 
 /* --------------------------- Titles --------------------------- */
@@ -235,3 +217,21 @@ form.add-task button[type="submit"]:hover, form[method="POST"][action="/create"]
     margin-top: 0.25rem;
   }
 }
+
+/* --------------------------- Snow animation --------------------------- */
+@keyframes fall {
+  0% { transform: translateY(-10%) rotate(0deg); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+}
+
+.snowflake {
+  position: fixed;
+  top: -2rem;
+  font-size: 1rem;
+  color: #fff8dc;
+  pointer-events: none;
+  animation: fall linear infinite;
+  opacity: 0.8;
+}
+
