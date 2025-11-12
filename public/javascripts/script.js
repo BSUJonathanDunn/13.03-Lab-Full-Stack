@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
   for (let i = 0; i < snowflakeCount; i++) {
     const flake = document.createElement('span');
     flake.className = 'snowflake';
+    //All of this is for random page placement, flake size, and animation delays
     flake.style.left = Math.random() * 100 + 'vw';
     flake.style.fontSize = (Math.random() * 10 + 10) + 'px';
     flake.style.animationDuration = (Math.random() * 5 + 5) + 's';
@@ -33,30 +34,35 @@ document.addEventListener('DOMContentLoaded', () => {
   const tasks = document.querySelectorAll('.task');
 
   //If user gives a blank box or changes their mind, save original text to the span's dataset.
- tasks.forEach(span => {
-  if (!span.dataset.original) {
-    span.dataset.original = span.textContent.trim();
-  }
-
-  span.addEventListener('click', () => {
-    span.contentEditable = true;
-    span.focus();
-  });
-
-  const saveChange = () => {
-    span.contentEditable = false;
-    const id = span.dataset.id;
-    const newText = span.textContent.trim();
-
-    if (!newText) {
-      alert('Task cannot be blank!');
-      span.textContent = span.dataset.original;
-      span.focus();
-      return;
+  tasks.forEach(span => {
+    if (!span.dataset.original) {
+      span.dataset.original = span.textContent.trim();
     }
 
+    //Makes the span within the <li> element editable
+    span.addEventListener('click', () => {
+      span.contentEditable = true;
+      span.focus();
+    });
+
+    //Function to save changes when task item is changed
+    const saveChange = () => {
+      span.contentEditable = false;
+      const id = span.dataset.id;
+      const newText = span.textContent.trim();
+
+      //No input given
+      if (!newText) {
+        alert('Task cannot be blank!');
+        span.textContent = span.dataset.original;
+        span.focus();
+        return;
+      }
+
+    //Input is same as original
     if (newText === span.dataset.original) return;
 
+    //Updating table with new text given by user to the task list span element
     fetch('/edit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -70,26 +76,30 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error(err);
         span.textContent = span.dataset.original;
       });
-  };
+    };
 
-  span.addEventListener('blur', saveChange);
+    //Leaving the task list span element will now save changes to table
+    span.addEventListener('blur', saveChange);
 
-  span.addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      span.blur();
-    }
+    //Makes it work with "Enter" key as well
+    span.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        span.blur();
+      }
+    });
   });
-});
 
   //Completion toggle
   const completedSpans = document.querySelectorAll('.complete');
+
   completedSpans.forEach(span => {
     span.addEventListener('click', () => {
       const id = span.dataset.id;
       const completedValue = Number(span.dataset.completed);
       const newValue = completedValue > 0 ? 0 : 1;
 
+      //call route to update completed table value
       fetch('/update_complete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -101,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
           span.textContent = newValue ? 'Completed' : 'Not Completed';
           span.dataset.completed = newValue;
 
-
+          //Make sure correct css is placed on the "completed" span
           const taskSpan = document.querySelector(`.task[data-id="${id}"]`);
           if (newValue) {
             taskSpan.classList.add('completed');
